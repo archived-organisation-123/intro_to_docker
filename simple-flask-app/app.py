@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def counter():
-    # Just a toy example, never do this in real code
+    # Just a toy example, never do this in real code. Global variables BAD!
     global count
     count += 1
     return f"I've been loaded {count} times!"
