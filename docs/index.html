@@ -36,6 +36,53 @@
 					<section data-markdown>
 						<textarea data-template>
 							# What is Docker?
+
+							Docker is a tool designed to make it easier to consistently, and reproducibly run applications.
+
+							Docker runs applications isolated from the rest of the host machine, like a virtual machine, but with much lower overhead.
+
+							## &#xfe40;
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							## Docker Images
+
+							Developers can package an application with all of it's dependencies into an image. This is a template for our application, which will later be used to create a running instance.
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							## Docker Containers
+
+							A container is created from an image, to be run on the host machine. This can be done with a single command, and does not require any more setup or installation.
+
+							Since an image does not change, we can use it to run multiple containers of the same image, even on the same host.
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							## Docker Daemon
+
+							A service that runs in the background on the host machine to manage containers.
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							## Docker Client
+
+							A tool that interacts with the daemon, to allow the user to manage containers. Today we will be using the `docker` CLI tool, but there are others.
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							## Docker Registry
+
+							After building an image, it can be pushed to a registry, to be pulled onto other machines. In a real-world example, you might host your own registry, today we will just be pulling images from the public [DockerHub](https://hub.docker.com/) registry. This is the default registry, and contains many publicly available images for use.
 						</textarea>
 					</section>
 				</section>
@@ -43,6 +90,47 @@
 					<section data-markdown>
 						<textarea data-template>
 							# Let's get started
+
+							Navigate to https://labs.play-with-docker.com/ unless you already have docker installed on your machine
+
+							Before you can continue, you will be prompted to log in to a DockerHub account. Create one if you do not already have one
+
+							## &#xfe40;
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							## Running our first docker container
+
+							`docker run hello-world`
+
+							This command will create and run a container from an image tagged `hello-world`. If you have not used this image before, Docker will not be able to find it locally, and so it will pull the latest version from [DockerHub](https://hub.docker.com/) before running.
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							`docker ps`
+
+							We use this command to get details about the running containers.
+
+							Our `hello-world` container is not in the list. It exited as soon as it finished it's output
+
+							This command will give us information about stopped containers as well
+
+							`docker ps -a`
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							Let's run something a bit more complicated. This command will run a containerized Ubuntu machine.
+
+							`docker run ubuntu`
+
+							Like the `hello-world` example, the container exited as soon as it finished it's startup task. We can keep it running by passing a flag to make it interactive.
+
+							`docker run -it ubuntu`
+
+							From here, we can run commands as if we were in the terminal of an Ubuntu operating system
 						</textarea>
 					</section>
 				</section>
@@ -50,6 +138,43 @@
 					<section data-markdown>
 						<textarea data-template>
 							# Running a simple static website
+
+							## &#xfe40;
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							Some containers can stay running after startup. This example launches a simple web server as it's startup task.
+
+							`docker run gps035/simple-static-site`
+
+							The output on the command line says `Static site is being served...` indicating that the site is waiting for requests.
+
+							But how do we access it?
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							## Port mapping
+
+							The site is listening for requests on port 80 internally, but we don't want to expose port 80 on our machine.
+
+							`docker run -p 8888:80 gps035/simple-static-site`
+
+							With the -p flag, we specify which port on the host machine should be mapped to an internal port.
+
+							Now, we can access the site on http://localhost:8888 (On [Play with docker](https://labs.play-with-docker.com/), the port number should appear as a link at the top of the page instead).
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							## Running in the background
+
+							After running the site, the server is running in the foreground in our terminal. We can see logs of the container printed when requests are made.
+
+							We can run the container in the background by adding the detached flag (`-d`):
+
+							`docker run -d -p 8888:80 gps035/simple-static-site`
 						</textarea>
 					</section>
 				</section>
@@ -57,6 +182,8 @@
 					<section data-markdown>
 						<textarea data-template>
 							# Building our first docker container
+
+							## &#xfe40;
 						</textarea>
 					</section>
 				</section>
@@ -64,6 +191,12 @@
 					<section data-markdown>
 						<textarea data-template>
 							# Building a web application
+
+							## &#xfe40;
+
+							```sh
+							docker run -p 5000:5000 gps035/simple-flask-app
+							```
 						</textarea>
 					</section>
 				</section>
