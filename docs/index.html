@@ -46,10 +46,6 @@
 					</section>
 					<section data-markdown>
 						<textarea data-template>
-						</textarea>
-					</section>
-					<section data-markdown>
-						<textarea data-template>
 							## Docker Images
 
 							Developers can package an application with all of it's dependencies into an image. This is a template for our application, which will later be used to create a running instance.
@@ -102,14 +98,16 @@
 						<textarea data-template>
 							## Running our first docker container
 
-							`docker run hello-world`
+							```
+							docker run hello-world
+							```
 
 							This command will create and run a container from an image tagged `hello-world`. If you have not used this image before, Docker will not be able to find it locally, and so it will pull the latest version from [DockerHub](https://hub.docker.com/) before running.
 						</textarea>
 					</section>
 					<section data-markdown>
 						<textarea data-template>
-							`docker ps`
+							## `docker ps`
 
 							We use this command to get details about the running containers.
 
@@ -117,18 +115,24 @@
 
 							This command will give us information about stopped containers as well
 
-							`docker ps -a`
+							```
+							docker ps -a
+							```
 						</textarea>
 					</section>
 					<section data-markdown>
 						<textarea data-template>
 							Let's run something a bit more complicated. This command will run a containerized Ubuntu machine.
 
-							`docker run ubuntu`
+							```
+							docker run ubuntu
+							```
 
 							Like the `hello-world` example, the container exited as soon as it finished it's startup task. We can keep it running by passing a flag to make it interactive.
 
-							`docker run -it ubuntu`
+							```
+							docker run -it ubuntu
+							```
 
 							From here, we can run commands as if we were in the terminal of an Ubuntu operating system
 						</textarea>
@@ -146,7 +150,9 @@
 						<textarea data-template>
 							Some containers can stay running after startup. This example launches a simple web server as it's startup task.
 
-							`docker run gps035/simple-static-site`
+							```
+							docker run gps035/simple-static-site
+							```
 
 							The output on the command line says `Static site is being served...` indicating that the site is waiting for requests.
 
@@ -159,7 +165,9 @@
 
 							The site is listening for requests on port 80 internally, but we don't want to expose port 80 on our machine.
 
-							`docker run -p 8888:80 gps035/simple-static-site`
+							```
+							docker run -p 8888:80 gps035/simple-static-site
+							```
 
 							With the -p flag, we specify which port on the host machine should be mapped to an internal port.
 
@@ -174,27 +182,135 @@
 
 							We can run the container in the background by adding the detached flag (`-d`):
 
-							`docker run -d -p 8888:80 gps035/simple-static-site`
+							```
+							docker run -d -p 8888:80 gps035/simple-static-site
+							```
 						</textarea>
 					</section>
 				</section>
 				<section>
 					<section data-markdown>
 						<textarea data-template>
-							# Building our first docker container
+							# Building our first docker image
 
-							## &#xfe40;
+							Let's make a folder for the contents of our static webserver project, and create a few files
+							```bash
+							mkdir static-site
+							cd static-site
+
+							touch Dockerfile
+							touch entrypoint.sh
+							mkdir html
+							touch html/index.html
+							```
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							### `html/index.html`
+
+							This is the file that will be served in response to HTTP requests.
+
+							We can keep the page simple for now. Just add the following HTML to the files:
+							```html
+							<h1>Hello, World!</h1>
+							```
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							### `entrypoint.sh`
+
+							This is the script that will run on startup of a container.
+
+							```bash
+							#!/bin/bash
+							echo "Static site is being served..."
+							exec nginx -g "daemon off;"
+							```
+
+							Just a few lines. We print some output to say that we have started, and then kick of our web server `nginx`.
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							### `Dockerfile`
+
+							This file contains the instructions for building the image.
+
+							```dockerfile
+							FROM nginx
+							COPY entrypoint.sh /
+							RUN chmod +x entrypoint.sh
+							COPY html /usr/share/nginx/html
+							CMD [ "./entrypoint.sh" ]
+							```
+
+							Let's cover this in more detail
+						</textarea>
+					</section>
+					<section>
+						<pre data-trim>
+							<code data-line-numbers="1">FROM nginx
+COPY entrypoint.sh /
+RUN chmod +x entrypoint.sh
+COPY html /usr/share/nginx/html
+CMD [ "./entrypoint.sh" ]
+							</code>
+						</pre>
+						<p>We start by building on top of the <code>nginx</code> image that has been created already.</p>
+					</section>
+					<section>
+						<pre data-trim>
+							<code data-line-numbers="2,3">FROM nginx
+COPY entrypoint.sh /
+RUN chmod +x entrypoint.sh
+COPY html /usr/share/nginx/html
+CMD [ "./entrypoint.sh" ]
+							</code>
+						</pre>
+						<p>Then we copy the entrypoint script into the image, and make it executable in it's filesystem</p>
+					</section>
+					<section>
+						<pre data-trim>
+							<code data-line-numbers="4">FROM nginx
+COPY entrypoint.sh /
+RUN chmod +x entrypoint.sh
+COPY html /usr/share/nginx/html
+CMD [ "./entrypoint.sh" ]
+							</code>
+						</pre>
+						<p>We then copy all of the static files to be served into the folder that nginx expects to find them</p>
+					</section>
+					<section>
+						<pre data-trim>
+							<code data-line-numbers="5">FROM nginx
+COPY entrypoint.sh /
+RUN chmod +x entrypoint.sh
+COPY html /usr/share/nginx/html
+CMD [ "./entrypoint.sh" ]
+							</code>
+						</pre>
+						<p>Lastly we set our entrypoint script to be the command run by default when a container is started</p>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							Each instruction in a dockerfile is stored as a separate layer.
+
+							This helps when iterating on changes to the container, as earlier lines will not have to be re-run, as the previous result will be used instead.
+
+							To make the best of this, lines that handle files that are more likely to change, should be placed lower in the file.
 						</textarea>
 					</section>
 				</section>
 				<section>
 					<section data-markdown>
 						<textarea data-template>
-							# Building a web application
+							# Building a web application image
 
 							## &#xfe40;
 
-							```sh
+							```bash
 							docker run -p 5000:5000 gps035/simple-flask-app
 							```
 						</textarea>
