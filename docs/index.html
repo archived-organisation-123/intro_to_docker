@@ -243,9 +243,8 @@
 							```dockerfile
 							FROM nginx
 							COPY entrypoint.sh /
-							RUN chmod +x entrypoint.sh
 							COPY html /usr/share/nginx/html
-							CMD [ "./entrypoint.sh" ]
+							CMD [ "sh", "/entrypoint.sh" ]
 							```
 
 							Let's cover this in more detail
@@ -255,42 +254,38 @@
 						<pre data-trim>
 							<code data-line-numbers="1">FROM nginx
 COPY entrypoint.sh /
-RUN chmod +x entrypoint.sh
 COPY html /usr/share/nginx/html
-CMD [ "./entrypoint.sh" ]
+CMD [ "sh", "/entrypoint.sh" ]
 							</code>
 						</pre>
 						<p>We start by building on top of the <code>nginx</code> image that has been created already.</p>
 					</section>
 					<section>
 						<pre data-trim>
-							<code data-line-numbers="2,3">FROM nginx
+							<code data-line-numbers="2">FROM nginx
 COPY entrypoint.sh /
-RUN chmod +x entrypoint.sh
 COPY html /usr/share/nginx/html
-CMD [ "./entrypoint.sh" ]
+CMD [ "sh", "/entrypoint.sh" ]
 							</code>
 						</pre>
-						<p>Then we copy the entrypoint script into the image, and make it executable in it's filesystem</p>
+						<p>Then we copy the entrypoint script into the image</p>
 					</section>
 					<section>
 						<pre data-trim>
-							<code data-line-numbers="4">FROM nginx
+							<code data-line-numbers="3">FROM nginx
 COPY entrypoint.sh /
-RUN chmod +x entrypoint.sh
 COPY html /usr/share/nginx/html
-CMD [ "./entrypoint.sh" ]
+CMD [ "sh", "/entrypoint.sh" ]
 							</code>
 						</pre>
 						<p>We then copy all of the static files to be served into the folder that nginx expects to find them</p>
 					</section>
 					<section>
 						<pre data-trim>
-							<code data-line-numbers="5">FROM nginx
+							<code data-line-numbers="4">FROM nginx
 COPY entrypoint.sh /
-RUN chmod +x entrypoint.sh
 COPY html /usr/share/nginx/html
-CMD [ "./entrypoint.sh" ]
+CMD [ "sh", "/entrypoint.sh" ]
 							</code>
 						</pre>
 						<p>Lastly we set our entrypoint script to be the command run by default when a container is started</p>
