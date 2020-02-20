@@ -154,7 +154,7 @@
 							docker run gps035/simple-static-site
 							```
 
-							The output on the command line says `Static site is being served...` indicating that the site is waiting for requests.
+							The output on the command line says `Static site is being served http://0.0.0.0:8080` indicating that the site is waiting for requests.
 
 							But how do we access it?
 						</textarea>
@@ -166,12 +166,12 @@
 							The site is listening for requests on port 80 internally, but we don't want to expose port 80 on our machine.
 
 							```
-							docker run -p 8888:80 gps035/simple-static-site
+							docker run -p 8080:80 gps035/simple-static-site
 							```
 
 							With the -p flag, we specify which port on the host machine should be mapped to an internal port.
 
-							Now, we can access the site on http://localhost:8888 (On [Play with docker](https://labs.play-with-docker.com/), the port number should appear as a link at the top of the page instead).
+							Now, we can access the site on http://localhost:8080 (On [Play with docker](https://labs.play-with-docker.com/), the port number should appear as a link at the top of the page instead).
 						</textarea>
 					</section>
 					<section data-markdown>
@@ -183,7 +183,7 @@
 							We can run the container in the background by adding the detached flag (`-d`):
 
 							```
-							docker run -d -p 8888:80 gps035/simple-static-site
+							docker run -d -p 8080:80 gps035/simple-static-site
 							```
 						</textarea>
 					</section>
