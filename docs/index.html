@@ -39,7 +39,7 @@
 
 							Docker is a tool designed to make it easier to consistently, and reproducibly run applications.
 
-							Docker runs applications isolated from the rest of the host machine, like a virtual machine, but with much lower overhead.
+							Docker runs applications isolated from other programs running on the same OS, like a virtual machine, but with much lower overhead.
 
 							## &#xfe40;
 						</textarea>
@@ -48,7 +48,7 @@
 						<textarea data-template>
 							## Docker Images
 
-							Developers can package an application with all of it's dependencies into an image. This is a template for our application, which will later be used to create a running instance.
+							Developers can package an application with all of it's dependencies into an image. This is a template for our application, which will later be used to create a running container.
 						</textarea>
 					</section>
 					<section data-markdown>
@@ -312,11 +312,141 @@ CMD [ "./entrypoint.sh" ]
 
 							## &#xfe40;
 
+							Let's build something a little more complicated. We can build a simple flask web application as a docker image. Try running the following:
 							```bash
 							docker run -p 5000:5000 gps035/simple-flask-app
 							```
+							This will start a site running on `localhost:5000` that will count the number of times that the page has been opened.
 						</textarea>
 					</section>
+					<section data-markdown>
+						<textarea data-template>
+							# Building a web application images
+
+							Let's make a folder for the contents of our flask app
+							```bash
+							mkdir flask-app
+							cd flask-app
+
+							touch Dockerfile
+							touch app.py
+							touch requirements.txt
+							```
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							### `requirements.txt`
+
+							This file contains the python dependencies of our application. There is only one for this simple example `Flask`
+
+							```
+							Flask==1.1.1
+							```
+
+							Just a few lines. We print some output to say that we have started, and then kick of our web server `nginx`.
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							### `app.py`
+
+							This file defines the behaviour of our API. We'll try to keep things simple for now, but there is a bit of boilerplate code that we need to add
+
+							```python
+							from flask import Flask
+
+							app = Flask(__name__)
+
+							@app.route("/")
+							def counter():
+								return "Hello CodeUp Leeds!"
+
+							if __name__ == "__main__":
+								app.run(debug=True, host='0.0.0.0')
+							```
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							### `Dockerfile`
+
+							```dockerfile
+							FROM python:3.7
+							COPY requirements.txt .
+							RUN pip install -r requirements.txt
+							COPY . /app
+							WORKDIR /app
+							ENTRYPOINT ["python"]
+							CMD ["app.py"]
+							```
+
+							Let's cover this in more detail
+						</textarea>
+					</section>
+					<section>
+						<pre data-trim>
+							<code data-line-numbers="1">FROM python:3.7
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . /app
+WORKDIR /app
+ENTRYPOINT ["python"]
+CMD ["app.py"]
+							</code>
+						</pre>
+						<p>This time our base image is <code>python:3.7</code>. This contains everything we need to build and run our app</p>
+					</section>
+					<section>
+						<pre data-trim>
+							<code data-line-numbers="2,3">FROM python:3.7
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . /app
+WORKDIR /app
+ENTRYPOINT ["python"]
+CMD ["app.py"]
+							</code>
+						</pre>
+						<p>Next we add our requirements file, and use pip to install the dependencies</p>
+					</section>
+					<section>
+						<pre data-trim>
+							<code data-line-numbers="4,5">FROM python:3.7
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . /app
+WORKDIR /app
+ENTRYPOINT ["python"]
+CMD ["app.py"]
+							</code>
+						</pre>
+						<p>Then we copy our files into an `app` directory and set that as our working directory</p>
+					</section>
+					<section>
+						<pre data-trim>
+							<code data-line-numbers="6,7">FROM python:3.7
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . /app
+WORKDIR /app
+ENTRYPOINT ["python"]
+CMD ["app.py"]
+							</code>
+						</pre>
+						<p>Lastly, we set the entrypoint of our container to the `python` command, and tell python to run `app.py`</p>
+					</section>
+					<textarea data-template>
+						### Running our app
+
+						Now we can build and run the docker image.
+
+						```bash
+						docker build -t flask-app:latest .
+						docker run -p 5000:5000 flask-app:latest
+						```
+					</textarea>
+				</section>
 				</section>
 				<section>
 					<h1>Feedback</h1>
