@@ -310,13 +310,13 @@ CMD [ "./entrypoint.sh" ]
 						<textarea data-template>
 							# Building a web application image
 
-							## &#xfe40;
-
 							Let's build something a little more complicated. We can build a simple flask web application as a docker image. Try running the following:
 							```bash
 							docker run -p 5000:5000 gps035/simple-flask-app
 							```
-							This will start a site running on `localhost:5000` that will count the number of times that the page has been opened.
+							This will start a simple site counter on `localhost:5000`.
+
+							## &#xfe40;
 						</textarea>
 					</section>
 					<section data-markdown>
@@ -436,6 +436,7 @@ CMD ["app.py"]
 						</pre>
 						<p>Lastly, we set the entrypoint of our container to the `python` command, and tell python to run `app.py`</p>
 					</section>
+					<section>
 					<textarea data-template>
 						### Running our app
 
@@ -446,7 +447,6 @@ CMD ["app.py"]
 						docker run -p 5000:5000 flask-app:latest
 						```
 					</textarea>
-				</section>
 				</section>
 				<section>
 					<h1>Feedback</h1>
