@@ -39,7 +39,7 @@
 
 							Docker is a tool designed to make it easier to consistently, and reproducibly run applications.
 
-							Docker runs applications isolated from the rest of the host machine, like a virtual machine, but with much lower overhead.
+							Docker runs applications isolated from other programs running on the same OS, like a virtual machine, but with much lower overhead.
 
 							## &#xfe40;
 						</textarea>
@@ -48,7 +48,7 @@
 						<textarea data-template>
 							## Docker Images
 
-							Developers can package an application with all of it's dependencies into an image. This is a template for our application, which will later be used to create a running instance.
+							Developers can package an application with all of it's dependencies into an image. This is a template for our application, which will later be used to create a running container.
 						</textarea>
 					</section>
 					<section data-markdown>
@@ -71,7 +71,9 @@
 						<textarea data-template>
 							## Docker Client
 
-							A tool that interacts with the daemon, to allow the user to manage containers. Today we will be using the `docker` CLI tool, but there are others.
+							A tool that interacts with the daemon, to allow the user to manage containers. Today we will be using the `docker` CLI tool, but there are others...
+
+							<iframe width="560" height="315" src="https://www.youtube.com/embed/eZDlJgJf55o" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 						</textarea>
 					</section>
 					<section data-markdown>
@@ -154,7 +156,7 @@
 							docker run gps035/simple-static-site
 							```
 
-							The output on the command line says `Static site is being served...` indicating that the site is waiting for requests.
+							The output on the command line says `Static site is being served http://0.0.0.0:8080` indicating that the site is waiting for requests.
 
 							But how do we access it?
 						</textarea>
@@ -166,12 +168,12 @@
 							The site is listening for requests on port 80 internally, but we don't want to expose port 80 on our machine.
 
 							```
-							docker run -p 8888:80 gps035/simple-static-site
+							docker run -p 8080:80 gps035/simple-static-site
 							```
 
 							With the -p flag, we specify which port on the host machine should be mapped to an internal port.
 
-							Now, we can access the site on http://localhost:8888 (On [Play with docker](https://labs.play-with-docker.com/), the port number should appear as a link at the top of the page instead).
+							Now, we can access the site on http://localhost:8080 (On [Play with docker](https://labs.play-with-docker.com/), the port number should appear as a link at the top of the page instead).
 						</textarea>
 					</section>
 					<section data-markdown>
@@ -183,7 +185,7 @@
 							We can run the container in the background by adding the detached flag (`-d`):
 
 							```
-							docker run -d -p 8888:80 gps035/simple-static-site
+							docker run -d -p 8080:80 gps035/simple-static-site
 							```
 						</textarea>
 					</section>
@@ -241,9 +243,8 @@
 							```dockerfile
 							FROM nginx
 							COPY entrypoint.sh /
-							RUN chmod +x entrypoint.sh
 							COPY html /usr/share/nginx/html
-							CMD [ "./entrypoint.sh" ]
+							CMD [ "sh", "/entrypoint.sh" ]
 							```
 
 							Let's cover this in more detail
@@ -253,42 +254,38 @@
 						<pre data-trim>
 							<code data-line-numbers="1">FROM nginx
 COPY entrypoint.sh /
-RUN chmod +x entrypoint.sh
 COPY html /usr/share/nginx/html
-CMD [ "./entrypoint.sh" ]
+CMD [ "sh", "/entrypoint.sh" ]
 							</code>
 						</pre>
 						<p>We start by building on top of the <code>nginx</code> image that has been created already.</p>
 					</section>
 					<section>
 						<pre data-trim>
-							<code data-line-numbers="2,3">FROM nginx
+							<code data-line-numbers="2">FROM nginx
 COPY entrypoint.sh /
-RUN chmod +x entrypoint.sh
 COPY html /usr/share/nginx/html
-CMD [ "./entrypoint.sh" ]
+CMD [ "sh", "/entrypoint.sh" ]
 							</code>
 						</pre>
-						<p>Then we copy the entrypoint script into the image, and make it executable in it's filesystem</p>
+						<p>Then we copy the entrypoint script into the image</p>
 					</section>
 					<section>
 						<pre data-trim>
-							<code data-line-numbers="4">FROM nginx
+							<code data-line-numbers="3">FROM nginx
 COPY entrypoint.sh /
-RUN chmod +x entrypoint.sh
 COPY html /usr/share/nginx/html
-CMD [ "./entrypoint.sh" ]
+CMD [ "sh", "/entrypoint.sh" ]
 							</code>
 						</pre>
 						<p>We then copy all of the static files to be served into the folder that nginx expects to find them</p>
 					</section>
 					<section>
 						<pre data-trim>
-							<code data-line-numbers="5">FROM nginx
+							<code data-line-numbers="4">FROM nginx
 COPY entrypoint.sh /
-RUN chmod +x entrypoint.sh
 COPY html /usr/share/nginx/html
-CMD [ "./entrypoint.sh" ]
+CMD [ "sh", "/entrypoint.sh" ]
 							</code>
 						</pre>
 						<p>Lastly we set our entrypoint script to be the command run by default when a container is started</p>
@@ -302,16 +299,159 @@ CMD [ "./entrypoint.sh" ]
 							To make the best of this, lines that handle files that are more likely to change, should be placed lower in the file.
 						</textarea>
 					</section>
+					<section data-markdown>
+						<textarea data-template>
+							### Running our website
+
+							Now we can build and run the docker image.
+
+							```bash
+							docker build -t static-site:latest .
+							docker run -p 8888:80 static-site:latest
+							```
+						</textarea>
+					</section>
 				</section>
 				<section>
 					<section data-markdown>
 						<textarea data-template>
 							# Building a web application image
 
-							## &#xfe40;
-
+							Let's build something a little more complicated. We can build a simple flask web application as a docker image. Try running the following:
 							```bash
 							docker run -p 5000:5000 gps035/simple-flask-app
+							```
+							This will start a simple site counter on `localhost:5000`.
+
+							## &#xfe40;
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							# Building a web application images
+
+							Let's make a folder for the contents of our flask app
+							```bash
+							mkdir flask-app
+							cd flask-app
+
+							touch Dockerfile
+							touch app.py
+							touch requirements.txt
+							```
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							### `requirements.txt`
+
+							This file contains the python dependencies of our application. There is only one for this simple example `Flask`
+
+							```
+							Flask==1.1.1
+							```
+
+							Just a few lines. We print some output to say that we have started, and then kick of our web server `nginx`.
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							### `app.py`
+
+							This file defines the behaviour of our API. We'll try to keep things simple for now, but there is a bit of boilerplate code that we need to add
+
+							```python
+							from flask import Flask
+
+							app = Flask(__name__)
+
+							@app.route("/")
+							def counter():
+								return "Hello CodeUp Leeds!"
+
+							if __name__ == "__main__":
+								app.run(debug=True, host='0.0.0.0')
+							```
+						</textarea>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							### `Dockerfile`
+
+							```dockerfile
+							FROM python:3.7
+							COPY requirements.txt .
+							RUN pip install -r requirements.txt
+							COPY . /app
+							WORKDIR /app
+							ENTRYPOINT ["python"]
+							CMD ["app.py"]
+							```
+
+							Let's cover this in more detail
+						</textarea>
+					</section>
+					<section>
+						<pre data-trim>
+							<code data-line-numbers="1">FROM python:3.7
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . /app
+WORKDIR /app
+ENTRYPOINT ["python"]
+CMD ["app.py"]
+							</code>
+						</pre>
+						<p>This time our base image is <code>python:3.7</code>. This contains everything we need to build and run our app</p>
+					</section>
+					<section>
+						<pre data-trim>
+							<code data-line-numbers="2,3">FROM python:3.7
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . /app
+WORKDIR /app
+ENTRYPOINT ["python"]
+CMD ["app.py"]
+							</code>
+						</pre>
+						<p>Next we add our requirements file, and use <code>pip</code> to install the dependencies</p>
+					</section>
+					<section>
+						<pre data-trim>
+							<code data-line-numbers="4,5">FROM python:3.7
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . /app
+WORKDIR /app
+ENTRYPOINT ["python"]
+CMD ["app.py"]
+							</code>
+						</pre>
+						<p>Then we copy our files into an <code>app</code> directory and set that as our working directory</p>
+					</section>
+					<section>
+						<pre data-trim>
+							<code data-line-numbers="6,7">FROM python:3.7
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . /app
+WORKDIR /app
+ENTRYPOINT ["python"]
+CMD ["app.py"]
+							</code>
+						</pre>
+						<p>Lastly, we set the entrypoint of our container to the <code>python</code> command, and tell python to run <code>app.py</code></p>
+					</section>
+					<section data-markdown>
+						<textarea data-template>
+							### Running our app
+
+							Now we can build and run the docker image.
+
+							```bash
+							docker build -t flask-app:latest .
+							docker run -p 5000:5000 flask-app:latest
 							```
 						</textarea>
 					</section>
