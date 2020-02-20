@@ -299,6 +299,18 @@ CMD [ "sh", "/entrypoint.sh" ]
 							To make the best of this, lines that handle files that are more likely to change, should be placed lower in the file.
 						</textarea>
 					</section>
+					<section data-markdown>
+						<textarea data-template>
+							### Running our website
+
+							Now we can build and run the docker image.
+
+							```bash
+							docker build -t static-site:latest .
+							docker run -p 8888:80 static-site:latest
+							```
+						</textarea>
+					</section>
 				</section>
 				<section>
 					<section data-markdown>
