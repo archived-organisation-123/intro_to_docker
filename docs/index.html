@@ -408,7 +408,7 @@ ENTRYPOINT ["python"]
 CMD ["app.py"]
 							</code>
 						</pre>
-						<p>Next we add our requirements file, and use pip to install the dependencies</p>
+						<p>Next we add our requirements file, and use <code>pip</code> to install the dependencies</p>
 					</section>
 					<section>
 						<pre data-trim>
@@ -421,7 +421,7 @@ ENTRYPOINT ["python"]
 CMD ["app.py"]
 							</code>
 						</pre>
-						<p>Then we copy our files into an `app` directory and set that as our working directory</p>
+						<p>Then we copy our files into an <code>app</code> directory and set that as our working directory</p>
 					</section>
 					<section>
 						<pre data-trim>
@@ -434,19 +434,20 @@ ENTRYPOINT ["python"]
 CMD ["app.py"]
 							</code>
 						</pre>
-						<p>Lastly, we set the entrypoint of our container to the `python` command, and tell python to run `app.py`</p>
+						<p>Lastly, we set the entrypoint of our container to the <code>python</code> command, and tell python to run <code>app.py</code></p>
 					</section>
-					<section>
-					<textarea data-template>
-						### Running our app
+					<section data-markdown>
+						<textarea data-template>
+							### Running our app
 
-						Now we can build and run the docker image.
+							Now we can build and run the docker image.
 
-						```bash
-						docker build -t flask-app:latest .
-						docker run -p 5000:5000 flask-app:latest
-						```
-					</textarea>
+							```bash
+							docker build -t flask-app:latest .
+							docker run -p 5000:5000 flask-app:latest
+							```
+						</textarea>
+					</section>
 				</section>
 				<section>
 					<h1>Feedback</h1>
